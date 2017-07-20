@@ -3,6 +3,7 @@ package middleware
 import (
 	"net/http"
 	"fmt"
+	"strings"
 )
 
 func PanicHandler(next http.HandlerFunc) http.HandlerFunc{
@@ -12,7 +13,9 @@ func PanicHandler(next http.HandlerFunc) http.HandlerFunc{
 		defer func(){
 			err := recover()
 			if err!=nil {
-				fmt.Println(err)
+				errParams := strings.Split(err.(string),"-")
+				errStr := fmt.Sprintf("{\"errno\":%s,\"errmsg\":\"%s\",\"data\":null}",errParams[0],errParams[1])
+				w.Write([]byte(errStr))
 			}
 		}()
 

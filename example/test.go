@@ -29,7 +29,7 @@ func CallbackFun(w http.ResponseWriter,req *http.Request){
 }
 
 func panicTest(w http.ResponseWriter,req *http.Request){
-	panic("err")
+	panic("123912-miss params")
 }
 
 

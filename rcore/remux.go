@@ -4,10 +4,6 @@ import (
 	"net/http"
 )
 
-const(
-	ERROR_URL = 1000	//未匹配到URL
-)
-
 type Remux struct {
 	handlerMapping map[string]http.HandlerFunc
 	middleHandler http.HandlerFunc
