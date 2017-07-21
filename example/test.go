@@ -16,6 +16,10 @@ func main(){
 
 	//设置URL映射
 	re.SetHandlerMapping("/",http.HandlerFunc(CallbackFun))
+	re.SetHandlerMapping("/hello",http.HandlerFunc(CallbackFun))
+	re.SetHandlerMapping("/he",http.HandlerFunc(CallbackFun))
+	re.SetHandlerMapping("/hev",http.HandlerFunc(CallbackFun))
+
 	re.SetHandlerMapping("/panic",http.HandlerFunc(panicTest))
 
 	//开始监听并阻塞

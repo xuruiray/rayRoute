@@ -5,6 +5,7 @@ import (
 )
 
 type Remux struct {
+	tree Node
 	handlerMapping map[string]http.HandlerFunc
 	middleHandler http.HandlerFunc
 }
@@ -16,11 +17,13 @@ func(re *Remux) ServeHTTP(w http.ResponseWriter, r *http.Request){
 }
 
 func(re *Remux) SetHandlerMapping (urlStr string,handlerFunc http.HandlerFunc){
-	re.handlerMapping[urlStr] = handlerFunc
+	//re.handlerMapping[urlStr] = handlerFunc
+	re.tree.InsertNode(urlStr,handlerFunc)
 }
 
 func(re *Remux) getHandlerMapping (urlStr string) (http.Handler) {
-	return re.handlerMapping[urlStr]
+	//return re.handlerMapping[urlStr]
+	return re.tree.FindNode(urlStr)
 }
 
 func(re *Remux) AddMiddleware(f func(handlerFunc http.HandlerFunc)http.HandlerFunc){
