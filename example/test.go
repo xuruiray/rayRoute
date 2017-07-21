@@ -2,8 +2,8 @@ package main
 
 import (
 	"net/http"
-	"rcore"
-	"middleware"
+	"github.com/Xu-Rui/rayRoute/rcore"
+	"github.com/Xu-Rui/rayRoute/middleware"
 )
 
 func main(){
