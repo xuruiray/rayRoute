@@ -11,9 +11,7 @@ type Remux struct {
 }
 
 func(re *Remux) ServeHTTP(w http.ResponseWriter, r *http.Request){
-	if _,ok:=re.handlerMapping[r.RequestURI];ok {
-		re.middleHandler.ServeHTTP(w, r)
-	}
+	re.middleHandler.ServeHTTP(w, r)
 }
 
 func(re *Remux) SetHandlerMapping (urlStr string,handlerFunc http.HandlerFunc){
@@ -40,6 +38,10 @@ func (re *Remux)defaultMiddleware() http.HandlerFunc{
 		fun.ServeHTTP(w,req)
 	}
 	return http.HandlerFunc(f)
+}
+
+func defaultHandler(w http.ResponseWriter,req *http.Request){
+	w.Write([]byte("hello world\n"))
 }
 
 func CreateNewRemux() *Remux{

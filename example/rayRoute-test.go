@@ -15,11 +15,10 @@ func main(){
 	re.AddMiddleware(middleware.PanicHandler)
 
 	//设置URL映射
-	re.SetHandlerMapping("/",http.HandlerFunc(CallbackFun))
-	re.SetHandlerMapping("/hello",http.HandlerFunc(CallbackFun))
-	re.SetHandlerMapping("/he",http.HandlerFunc(CallbackFun))
-	re.SetHandlerMapping("/hev",http.HandlerFunc(CallbackFun))
-
+	re.SetHandlerMapping("/",http.HandlerFunc(Hello))
+	re.SetHandlerMapping("/hello",http.HandlerFunc(Hello))
+	re.SetHandlerMapping("/he",http.HandlerFunc(Hello))
+	re.SetHandlerMapping("/hev",http.HandlerFunc(Hello))
 	re.SetHandlerMapping("/panic",http.HandlerFunc(panicTest))
 
 	//开始监听并阻塞
@@ -28,7 +27,7 @@ func main(){
 
 
 //自主编写的Controller
-func CallbackFun(w http.ResponseWriter,req *http.Request){
+func Hello(w http.ResponseWriter,req *http.Request){
 	w.Write([]byte("hello world\n"))
 }
 
