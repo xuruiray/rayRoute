@@ -13,7 +13,8 @@ func PanicHandler(next http.HandlerFunc) http.HandlerFunc{
 		defer func(){
 			err := recover()
 			if err!=nil {
-				errParams := strings.Split(error(err).Error(),"-")
+				str := fmt.Sprintf("",err)
+				errParams := strings.Split(str,"-")
 				errStr := fmt.Sprintf("{\"errno\":%s,\"errmsg\":\"%s\",\"data\":null}",errParams[0],errParams[1])
 				w.Write([]byte(errStr))
 			}

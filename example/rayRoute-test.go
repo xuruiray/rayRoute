@@ -2,9 +2,9 @@ package main
 
 import (
 	"net/http"
+	"context"
 	"github.com/Xu-Rui/rayRoute/rcore"
 	"github.com/Xu-Rui/rayRoute/middleware"
-	"context"
 )
 
 func main(){
@@ -13,7 +13,7 @@ func main(){
 
 	//添加中间件
 	re.AddMiddleware(testMiddleware)
-	re.AddMiddleware(middleware.PanicHandler)
+	re.AddMiddleware(middleware.PanicHandler())
 
 	//设置URL映射
 	re.SetHandlerMapping("/",Hello)
