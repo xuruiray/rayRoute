@@ -3,7 +3,6 @@ package rcore
 import (
 	"net/http"
 	"context"
-	"fmt"
 )
 
 type ReHandlerFun func(context.Context,*http.Request) (string)
