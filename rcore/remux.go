@@ -3,6 +3,7 @@ package rcore
 import (
 	"net/http"
 	"context"
+	"fmt"
 )
 
 type ReHandlerFun func(context.Context,*http.Request) (string)
@@ -18,13 +19,17 @@ func(re *Remux) ServeHTTP(w http.ResponseWriter, r *http.Request){
 }
 
 func(re *Remux) SetHandlerMapping (urlStr string,handlerFunc func(context.Context,*http.Request) (string)){
-	//re.handlerMapping[urlStr] = handlerFunc
-	re.tree.InsertNode(urlStr,packagefun(ReHandlerFun(handlerFunc)))
+	re.handlerMapping[urlStr] = handlerFunc
+	//if re.middleHandler == nil {
+	//	re.middleHandler = re.defaultMiddleware()
+	//}else {
+	//	re.tree.InsertNode(urlStr, packagefun(ReHandlerFun(handlerFunc)))
+	//}
 }
 
 func(re *Remux) getHandlerMapping (urlStr string) (http.Handler) {
-	//return re.handlerMapping[urlStr]
-	return re.tree.FindNode(urlStr)
+	return re.handlerMapping[urlStr]
+	//return re.tree.FindNode(urlStr)
 }
 
 func(re *Remux) AddMiddleware(f func(handlerFunc http.HandlerFunc)http.HandlerFunc){
