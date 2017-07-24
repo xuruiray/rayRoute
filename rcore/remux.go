@@ -18,7 +18,6 @@ func(re *Remux) ServeHTTP(w http.ResponseWriter, r *http.Request){
 }
 
 func(re *Remux) SetHandlerMapping (urlStr string,handlerFunc func(context.Context,*http.Request) (string)){
-
 	if re.middleHandler == nil {
 		re.middleHandler = re.defaultMiddleware()
 	}else {
@@ -27,15 +26,8 @@ func(re *Remux) SetHandlerMapping (urlStr string,handlerFunc func(context.Contex
 	}
 }
 
-func(re *Remux) getHandlerMapping (urlStr string) (http.Handler) {
-	if v,ok:=re.handlerMapping[urlStr];ok{
-		return v
-	}else{
-		return nil
-	}
-
-	//return re.handlerMapping[urlStr]
-
+func(re *Remux) getHandlerMapping (urlStr string) (http.HandlerFunc) {
+	return re.handlerMapping[urlStr]
 	//return re.tree.FindNode(urlStr)
 }
 
