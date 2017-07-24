@@ -9,27 +9,31 @@
 </hr>
 
 ```go
-
 func main(){
 	//创建路由复用器
 	re := rcore.CreateNewRemux()
 
 	//添加中间件
 	re.AddMiddleware(testMiddleware)
+	re.AddMiddleware(middleware.PanicHandler)
 
 	//设置URL映射
-	re.SetHandlerMapping("/",http.HandlerFunc(CallbackFun))
-	
+	re.SetHandlerMapping("/hello",Hello)
+	re.SetHandlerMapping("/panic",Hello)
+
 	//开始监听并阻塞
 	http.ListenAndServe(":80",re)
 }
 
 
 //自主编写的Controller
-func CallbackFun(w http.ResponseWriter,req *http.Request){
-	w.Write([]byte("hello world\n"))
+func Hello(conntext context.Context, req *http.Request) (string){
+	return "hello world\n"
 }
 
+func panicTest(conntext context.Context, req *http.Request) (string){
+	panic("123912-miss params")
+}
 
 //自主编写的middleware
 func testMiddleware(next http.HandlerFunc) http.HandlerFunc{
@@ -41,6 +45,9 @@ func testMiddleware(next http.HandlerFunc) http.HandlerFunc{
 	}
 	return http.HandlerFunc(f)
 }
+
+
+
 
 ```
 

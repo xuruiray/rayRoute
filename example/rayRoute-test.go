@@ -44,6 +44,7 @@ func testMiddleware(next http.HandlerFunc) http.HandlerFunc{
 		next.ServeHTTP(w,req)
 		w.Write([]byte("backward\n"))
 	}
+
 	return http.HandlerFunc(f)
 }
 
