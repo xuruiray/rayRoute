@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"context"
 	"github.com/Xu-Rui/rayRoute/rcore"
+	"github.com/Xu-Rui/rayRoute/middleware"
 )
 
 func main(){
@@ -12,13 +13,14 @@ func main(){
 
 	//添加中间件
 	re.AddMiddleware(testMiddleware)
+	re.AddMiddleware(middleware.PanicHandler)
 
 	//设置URL映射
 	re.SetHandlerMapping("/",Hello)
 	re.SetHandlerMapping("/hello",Hello)
 	re.SetHandlerMapping("/he",Hello)
 	re.SetHandlerMapping("/hev",Hello)
-	re.SetHandlerMapping("/panic",Hello)
+	re.SetHandlerMapping("/panic",panicTest)
 
 	//开始监听并阻塞
 	http.ListenAndServe(":80",re)
@@ -32,6 +34,7 @@ func Hello(conntext context.Context, req *http.Request) (string){
 
 func panicTest(conntext context.Context, req *http.Request) (string){
 	panic("123912-miss params")
+	return "panic Test\n"
 }
 
 //自主编写的middleware
@@ -45,3 +48,5 @@ func testMiddleware(next http.HandlerFunc) http.HandlerFunc{
 
 	return http.HandlerFunc(f)
 }
+
+
