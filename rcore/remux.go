@@ -19,7 +19,7 @@ func(re *Remux) ServeHTTP(w http.ResponseWriter, r *http.Request){
 
 func(re *Remux) SetHandlerMapping (urlStr string,handlerFunc func(context.Context,*http.Request) (string)){
 	//re.handlerMapping[urlStr] = handlerFunc
-	re.tree.InsertNode(urlStr,packagefun(handlerFunc))
+	re.tree.InsertNode(urlStr,packagefun(ReHandlerFun(handlerFunc)))
 }
 
 func(re *Remux) getHandlerMapping (urlStr string) (http.Handler) {
