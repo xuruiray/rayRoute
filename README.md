@@ -52,4 +52,4 @@ func testMiddleware(next http.HandlerFunc) http.HandlerFunc{
 ```
 
 
-![](http://wordpressphoto.oss-cn-shanghai.aliyuncs.com/%E6%8F%92%E5%9B%BE/cat.jpg)
+![](http://photo.rhymecode.com/%E6%8F%92%E5%9B%BE/cat.jpg)
