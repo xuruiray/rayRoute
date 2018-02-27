@@ -2,44 +2,157 @@ package rayRoute
 
 import (
 	"context"
-	"fmt"
+	"github.com/stretchr/testify/assert"
+	"io/ioutil"
+	"net"
 	"net/http"
 	"testing"
+	"time"
 )
 
-func init() {
-	//创建路由复用器
+func initServer(listener net.Listener, handler http.Handler) {
+	svr := http.Server{Handler: handler}
+	svr.Serve(listener)
+}
+
+func TestSetHandlerMapping(t *testing.T) {
+	tests := []struct {
+		name     string
+		path     string
+		wantBody string
+		wantErr  error
+	}{
+		{
+			name:     "正常流程",
+			path:     "/hello",
+			wantBody: "hello",
+			wantErr:  nil,
+		},
+		//TODO 测试用例待完善
+	}
+
 	re := CreateNewRemux()
+	for _, v := range tests {
 
-	//添加中间件
-	re.AddMiddleware(testMiddleware)
+		f := func(context.Context, *http.Request) string {
+			return v.wantBody
+		}
 
-	//设置URL映射
-	re.SetHandlerMapping("/hello", Hello)
+		re.SetHandlerMapping(v.path, f)
+	}
 
-	//开始监听并阻塞
-	err := http.ListenAndServe(":8001", re)
-	if err != nil {
-		fmt.Println(err)
+	//启动服务
+	listener, _ := net.Listen("tcp", ":8001")
+	go initServer(listener, re)
+
+	for _, v := range tests {
+
+		//发送测试请求
+		resp, err := http.Get("http://localhost:8001" + v.path)
+		assert.Equal(t, v.wantErr, err)
+		if err != nil {
+			continue
+		}
+
+		// 读取响应
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			assert.Fail(t, err.Error())
+		}
+
+		assert.Equal(t, v.wantBody, string(body))
 	}
 }
 
-//自主编写的Controller
-func Hello(conntext context.Context, req *http.Request) string {
-	return "hello world\n"
-}
-
-//自主编写的middleware
-func testMiddleware(next http.HandlerFunc) http.HandlerFunc {
-	f := func(w http.ResponseWriter, req *http.Request) {
-		w.Write([]byte("forward\n"))
-		//下一个逻辑
-		next.ServeHTTP(w, req)
-		w.Write([]byte("backward\n"))
+// TODO 测试应该不用这样写，写的手酸。。
+func TestAddMiddleware(t *testing.T) {
+	tests := []struct {
+		name         string
+		path         string
+		body         string
+		wantForward  string
+		wantBackward string
+		want         string
+		wantErr      error
+	}{
+		{
+			name:         "正常流程",
+			path:         "/test",
+			body:         "test",
+			wantForward:  "F",
+			wantBackward: "B",
+			want:         "FtestB",
+			wantErr:      nil,
+		}, {
+			name:         "正常流程",
+			path:         "",
+			wantForward:  "Forward",
+			wantBackward: "Backward",
+			wantErr:      nil,
+		},
 	}
-	return http.HandlerFunc(f)
+
+	for _, v := range tests {
+
+		re := CreateNewRemux()
+
+		// 绑定一个 middleware
+		midf := func(next http.HandlerFunc) http.HandlerFunc {
+			f := func(w http.ResponseWriter, req *http.Request) {
+				w.Write([]byte(v.wantForward))
+				next.ServeHTTP(w, req)
+				w.Write([]byte(v.wantBackward))
+			}
+			return http.HandlerFunc(f)
+		}
+		re.AddMiddleware(midf)
+
+		// 绑定一个 Handler
+		handf := func(context.Context, *http.Request) string {
+			return "test"
+		}
+		re.SetHandlerMapping("/test", handf)
+
+		//启动服务
+		listener, _ := net.Listen("tcp", ":8001")
+		go initServer(listener, re)
+
+		//发送测试请求
+		resp, err := http.Get("http://localhost:8001" + v.path)
+		assert.Equal(t, v.wantErr, err)
+		if err != nil {
+			continue
+		}
+
+		// 读取响应
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			assert.Fail(t, err.Error())
+		}
+
+		// 比较测试结果
+		assert.Equal(t, v.wantForward+"test"+v.wantBackward, string(body))
+
+		//关闭服务
+		listener.Close()
+	}
 }
 
-func TestCreateNewRemux(t *testing.T) {
-
+func TestServer(t *testing.T) {
+	re := CreateNewRemux()
+	//绑定一个 Handler
+	f := func(context.Context, *http.Request) string {
+		return "test"
+	}
+	re.SetHandlerMapping("/test", f)
+	//启动服务
+	listener, _ := net.Listen("tcp", ":8001")
+	go func() {
+		time.Sleep(1 * time.Second)
+		//关闭服务
+		listener.Close()
+	}()
+	initServer(listener, re)
 }
