@@ -38,9 +38,8 @@ func (re *Remux) AddMiddleware(f func(handlerFunc http.HandlerFunc) http.Handler
 func (re *Remux) SetHandlerMapping(urlStr string, handlerFunc func(context.Context, *http.Request) string) {
 	if re.middleHandler == nil {
 		re.middleHandler = re.routeMiddleware()
-	} else {
-		re.tree.InsertNode(urlStr, packagefun(ReHandlerFun(handlerFunc)))
 	}
+	re.tree.InsertNode(urlStr, packagefun(ReHandlerFun(handlerFunc)))
 }
 
 // defaultMiddleware 默认中间件用于 查找 url 对应 handler
