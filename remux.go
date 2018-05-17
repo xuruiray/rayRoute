@@ -3,6 +3,7 @@ package rayRoute
 import (
 	"context"
 	"net/http"
+	"strings"
 )
 
 type ReHandlerFun func(context.Context, *http.Request) string
@@ -45,7 +46,7 @@ func (re *Remux) SetHandlerMapping(urlStr string, handlerFunc func(context.Conte
 // defaultMiddleware 默认中间件用于 查找 url 对应 handler
 func (re *Remux) routeMiddleware() http.HandlerFunc {
 	f := func(w http.ResponseWriter, req *http.Request) {
-		fun := re.getHandlerMapping(req.RequestURI)
+		fun := re.getHandlerMapping(strings.Split(req.RequestURI,"?")[0])
 		if fun != nil {
 			fun.ServeHTTP(w, req)
 		}
