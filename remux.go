@@ -40,7 +40,14 @@ func (re *Remux) SetHandlerMapping(urlStr string, handlerFunc func(context.Conte
 	if re.middleHandler == nil {
 		re.middleHandler = re.routeMiddleware()
 	}
-	re.tree.InsertNode(urlStr, packagefun(ReHandlerFun(handlerFunc)))
+	re.tree.InsertNode(urlStr, Value(packagefun(ReHandlerFun(handlerFunc))))
+	//re.handlerMapping[urlStr] = packagefun(ReHandlerFun(handlerFunc))
+}
+
+// getHandlerMapping 获取 url 对应的 handler
+func (re *Remux) getHandlerMapping(urlStr string) http.HandlerFunc {
+	return http.HandlerFunc(re.tree.FindNode(urlStr))
+	//return re.handlerMapping[urlStr]
 }
 
 // defaultMiddleware 默认中间件用于 查找 url 对应 handler
@@ -52,11 +59,6 @@ func (re *Remux) routeMiddleware() http.HandlerFunc {
 		}
 	}
 	return http.HandlerFunc(f)
-}
-
-// getHandlerMapping 获取 url 对应的 handler
-func (re *Remux) getHandlerMapping(urlStr string) http.HandlerFunc {
-	return re.tree.FindNode(urlStr)
 }
 
 // packagefun 用于包装 Handler 确保返回值能够输出
