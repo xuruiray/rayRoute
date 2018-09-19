@@ -16,7 +16,7 @@ type Node struct {
 	value    Value
 }
 
-// InsertNode 添加节点
+// InsertNode 添加节点 TODO 未判断前缀与 urlStr 相等的情况
 func (n *Node) InsertNode(urlStr string, value Value) {
 
 	// 无子节点
