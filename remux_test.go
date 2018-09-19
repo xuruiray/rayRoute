@@ -1,18 +1,18 @@
 package rayRoute
 
 import (
-	"net"
-	"net/http"
-	"testing"
 	"context"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
+	"net"
+	"net/http"
+	"testing"
 )
 
 type Route struct {
-	methord  string
-	path     string
+	methord string
+	path    string
 }
 
 var (
@@ -50,8 +50,8 @@ var (
 		{"GET", "/sieve.gif"},
 		{"GET", "/tos.html"},
 		//TODO 冲突
-		//{"GET", "/articles/"},
-		//{"GET", "/articles/go_command.html"},
+		{"GET", "/articles/"},
+		{"GET", "/articles/go_command.html"},
 		//{"GET", "/articles/index.html"},
 		//{"GET", "/articles/wiki/"},
 		//{"GET", "/articles/wiki/edit.html"},
@@ -479,10 +479,11 @@ func TestSetHandlerMapping(t *testing.T) {
 			resp.Body.Close()
 			assert.Fail(t, err.Error())
 		}
-		if !assert.Equal(t, v.path, string(body)){
+		if !assert.Equal(t, v.path, string(body)) {
 			faild++
 		}
 		sum++
 	}
-	fmt.Println(faild,sum)
+	fmt.Printf("失败数量=%v,测试总数=%v\n", faild, sum)
+	fmt.Println(re.tree.PrintTree())
 }
